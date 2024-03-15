@@ -11,7 +11,7 @@ class Side(enum.Enum):
 
 
 class Symbol(enum.Enum):
-    SOL = "SOL_USDC"
+    pass
 
 
 class TimeInForce(enum.Enum):
