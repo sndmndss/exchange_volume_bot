@@ -130,6 +130,8 @@ async def main():
                                                TimeInForce(int(order_type)).name,
                                                proxies,
                                                )
+                        else:
+                            print("Quantity of private_keys, public_keys and proxies must be equal!")
                 except ValueError as e:
                     print(e)
             except ValueError:
