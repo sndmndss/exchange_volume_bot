@@ -15,9 +15,9 @@ class Symbol(enum.Enum):
 
 
 class TimeInForce(enum.Enum):
-    GTC = "GTC"
-    IOC = "IOC"
-    FOK = "FOK"
+    GTC = 0
+    IOC = 1
+    FOK = 2
 
 
 class SelfTradePrevention(enum.Enum):
