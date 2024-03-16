@@ -32,8 +32,7 @@ pip install requirements.txt
 ```
 ## Configuration
 
-1. Create data/ folder in backpack_bot directory
-2. Add your public and private keys to the data/public_keys.txt and data/private_keys.txt files respectively, one key per line.
+1. Add your public and private keys to the data/public_keys.txt and data/private_keys.txt files respectively, one key per line.
 ```
 # data/public_keys.txt
 your_public_key_1
@@ -46,7 +45,7 @@ your_private_key_2
 ```
 IMPORTANT:
 **Quantity of public keys, private keys and proxies must be equal, without it code won't work**
-3. If you are using proxies, add them to the data/proxies.txt file in the format host:port:username:password, one proxy per line.
+2. Add proxy to the data/proxies.txt file in the format host:port:username:password, one proxy per line.
 
 ## Usage
 

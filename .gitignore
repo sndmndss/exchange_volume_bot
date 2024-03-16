@@ -1,4 +1,3 @@
 .idea
 .env
-*.txt
 __pycache__
