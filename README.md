@@ -2,6 +2,8 @@
 
 To install the trading bot, follow these steps:
 
+Install python > 3.6
+
 1. Clone the repository:
 ```bash
 git clone https://github.com/yourusername/trading-bot.git
@@ -65,5 +67,7 @@ Remember, that you can access additional configuration options by entering 000 w
 ## Troubleshooting
 
 Second function of extra options works only sometimes because backpack api works not correctly.
+
+On macOS you may have SSL Certificate error. Open Applications/Python {version} and start "Install Certificates.command"
 
 **If you have questions, problems or offer contact me in telegram: [@sndmnds](https://t.me/sndmnds)**
