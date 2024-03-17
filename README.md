@@ -20,11 +20,11 @@ python -m venv venv
 
 _On windows_
 ```
-env\Scripts\activate
+venv\Scripts\activate
 ```
 _On linux or Mac OS:_
 ```
-source env/bin/activate
+source venv/bin/activate
 ```
 5. Install packages:
 ```bash
