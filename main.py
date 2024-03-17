@@ -123,7 +123,7 @@ async def main():
                     proxies = proxy_formation()
                     public_keys, private_keys = keys_loader()
                     if 0.01 <= float(min_quantity) < float(max_quantity):
-                        if len(public_keys) == len(private_keys) == len(proxies):
+                        if len(public_keys) == len(private_keys):
                             await infinite_run(public_keys, private_keys,
                                                min_quantity, max_quantity,
                                                symbols_list[int(symbol_choice)],

@@ -28,7 +28,7 @@ async def _handle_post(self, params):
         async with session.post("https://api.backpack.exchange/api/v1/order",
                                 headers=(await self.headers(params=params,
                                                             instruction=Instruction.ORDER_EXECUTE.value)),
-                                data=json.dumps(params), proxy=self.proxy) as response:
+                                data=json.dumps(params)) as response:
             try:
                 return await response.json()
             except ContentTypeError:
@@ -99,7 +99,7 @@ class Site:
             async with session.get("https://api.backpack.exchange/api/v1/trades",
                                    headers=await self.headers({"symbol": symbol},
                                                               "fillHistoryQueryAll"),
-                                   params={"symbol": symbol}, proxy=self.proxy) as response:
+                                   params={"symbol": symbol}) as response:
                 try:
                     return await response.json()
                 except ContentTypeError:
@@ -108,15 +108,14 @@ class Site:
     async def get_user_order_history(self):
         async with aiohttp.ClientSession() as session:
             async with session.get("https://api.backpack.exchange/wapi/v1/history/fills",
-                                   headers=await self.headers({"limit": 100},
+                                   headers=await self.headers({"limit": 999},
                                                               "fillHistoryQueryAll"),
-                                   params={"limit": 100}, proxy=self.proxy) as response:
+                                   params={"limit": 999}) as response:
                 try:
                     return await response.json()
                 except ContentTypeError:
                     logger.error("Backpack api is shit so try few more times")
                     return await response.text()
-
 
 
 class Trade(Site):
@@ -226,4 +225,6 @@ class Trade(Site):
         elif len(r) < 2:
             logger.error("API is overloaded")
         else:
-            logger.error(r)
+            logger.error(r + str(price) + str(params))
+            self.quantity = round(self.quantity - 0.01, 2)
+            await self._sell_order()
