@@ -108,9 +108,9 @@ class Site:
     async def get_user_order_history(self):
         async with aiohttp.ClientSession() as session:
             async with session.get("https://api.backpack.exchange/wapi/v1/history/fills",
-                                   headers=await self.headers({"limit": 100},
+                                   headers=await self.headers({"limit": 999},
                                                               "fillHistoryQueryAll"),
-                                   params={"limit": 100}, proxy=self.proxy) as response:
+                                   params={"limit": 999}, proxy=self.proxy) as response:
                 try:
                     return await response.json()
                 except ContentTypeError:
@@ -226,4 +226,6 @@ class Trade(Site):
         elif len(r) < 2:
             logger.error("API is overloaded")
         else:
-            logger.error(r)
+            logger.error(r + str(price) + str(params))
+            self.quantity = round(self.quantity - 0.01, 2)
+            await self._sell_order()
