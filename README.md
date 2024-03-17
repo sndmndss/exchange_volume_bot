@@ -14,7 +14,7 @@ cd trading-bot
 
 3. Create environment:
 ```
-python -m env env
+python -m venv venv
 ```
 4. Activate environment:
 
