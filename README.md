@@ -15,22 +15,22 @@ cd trading-bot
   ```
 
 3. Create environment:
-```
+``` bash
 python -m venv venv
 ```
 4. Activate environment:
 
 _On windows_
-```
+``` bash
 venv\Scripts\activate
 ```
 _On linux or Mac OS:_
-```
+``` bash
 source venv/bin/activate
 ```
 5. Install packages:
 ```bash
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 ## Configuration
 
