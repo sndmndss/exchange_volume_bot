@@ -140,10 +140,6 @@ async def main():
     else:
         print("The choice must be a number of symbol")
 
-def test():
-    print(Site)
-
 
 if __name__ == '__main__':
-    # asyncio.run(main())
-    test()
+    asyncio.run(main())
