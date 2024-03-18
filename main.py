@@ -18,7 +18,10 @@ async def run_all(queue: list):
     tasks = []
     for bot in queue:
         tasks.append(bot.buy_order())
-    await asyncio.gather(*tasks)
+    try:
+        await asyncio.gather(*tasks)
+    except:
+        pass
 
 
 async def infinite_run(public_keys, private_keys, min_quantity, max_quantity, symbol, time_in_force, proxies):
