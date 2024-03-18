@@ -18,6 +18,7 @@ async def run_all(queue: list):
     tasks = []
     for bot in queue:
         tasks.append(bot.buy_order())
+
     await asyncio.gather(*tasks)
 
 
