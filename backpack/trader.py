@@ -153,42 +153,46 @@ class Trade(Site):
                 Returns:
                     None: The function returns nothing but logs the outcome of the order.
         """
-        price = await middle_bid_price(await self.get_order_history(self.symbol))
-        params = {
-            "orderType": OrderType.LIMIT.value,
-            "price": str(price),
-            "quantity": str(self.quantity),
-            "side": Side.BUY.value,
-            "symbol": self.symbol,
-            "timeInForce": self.time_in_force,
-            }
-        r = await _handle_post(self=self, params=params)
-        if isinstance(r, dict) and len(r) > 2:
-            if r["status"] == "Expired":
-                logger.warning(f"{r['orderType']} {r['side']} order for {r['quantity']} {r['symbol']} "
-                               f"was not filled with price : {str(price)}")
-                await asyncio.sleep(3)
-                await self.buy_order()
-            elif r["status"] == "Filled":
-                logger.success(f"{r['orderType']} {r['side']} order for {r['quantity']} {r['symbol']} "
-                               f"was filled with price : {str(price)}")
-                self.volume += price * self.quantity
-                logger.success(f"Current {self.public_key} account volume: {str(self.volume)}")
-                await asyncio.sleep(random_sleep_time())
-                await self._sell_order()
-            elif r["status"] == "New":
-                logger.success(f"{r['orderType']} {r['side']} order for {r['quantity']} {r['symbol']} "
-                               f"was created with price : {str(price)}")
-                await self._sell_order()
+        try:
+            price = await middle_bid_price(await self.get_order_history(self.symbol))
+            params = {
+                "orderType": OrderType.LIMIT.value,
+                "price": str(price),
+                "quantity": str(self.quantity),
+                "side": Side.BUY.value,
+                "symbol": self.symbol,
+                "timeInForce": self.time_in_force,
+                }
+            r = await _handle_post(self=self, params=params)
+            if isinstance(r, dict) and len(r) > 2:
+                if r["status"] == "Expired":
+                    logger.warning(f"{r['orderType']} {r['side']} order for {r['quantity']} {r['symbol']} "
+                                   f"was not filled with price : {str(price)}")
+                    await asyncio.sleep(3)
+                    await self.buy_order()
+                elif r["status"] == "Filled":
+                    logger.success(f"{r['orderType']} {r['side']} order for {r['quantity']} {r['symbol']} "
+                                   f"was filled with price : {str(price)}")
+                    self.volume += price * self.quantity
+                    logger.success(f"Current {self.public_key} account volume: {str(self.volume)}")
+                    await asyncio.sleep(random_sleep_time())
+                    await self._sell_order()
+                elif r["status"] == "New":
+                    logger.success(f"{r['orderType']} {r['side']} order for {r['quantity']} {r['symbol']} "
+                                   f"was created with price : {str(price)}")
+                    await self._sell_order()
+                else:
+                    logger.error("Unexpected responce"+str(r))
+            elif len(r) < 2:
+                logger.error("API is overloaded")
             else:
-                logger.error("Unexpected responce"+str(r))
-        elif len(r) < 2:
-            logger.error("API is overloaded")
-        else:
-            if r == "Insufficient funds":
-                logger.error("Insufficient funds, please change the quantity range")
-            else:
-                logger.error(f"{r}, check the quantity range and your account funds or contact developer")
+                if r == "Insufficient funds":
+                    logger.error("Insufficient funds, please change the quantity range")
+                else:
+                    logger.error(f"{r}, check the quantity range and your account funds or contact developer")
+        except Exception:
+            logger.error("Bad request, retrying...")
+            await self.buy_order()
 
     async def _sell_order(self):
         """
@@ -197,35 +201,39 @@ class Trade(Site):
                 Returns:
                     None: The function returns nothing but logs the outcome of the order.
         """
-        price = await middle_ask_price(await self.get_order_history(self.symbol))
-        params = {
-            "orderType": OrderType.LIMIT.value,
-            "price": price,
-            "quantity": str(self.quantity),
-            "selfTradePrevention": SelfTradePrevention.ALLOW.value,
-            "side": Side.SELL.value,
-            "symbol": self.symbol,
-            "timeInForce": self.time_in_force,
-            }
-        r = await _handle_post(self=self, params=params)
-        if isinstance(r, dict) and len(r) > 2:
-            if r["status"] == "Expired":
-                logger.warning(f"{r['orderType']} {r['side']} order for {r['quantity']} {r['symbol']} "
-                               f"was not filled with price : {str(price)}")
-                await asyncio.sleep(3)
+        try:
+            price = await middle_ask_price(await self.get_order_history(self.symbol))
+            params = {
+                "orderType": OrderType.LIMIT.value,
+                "price": price,
+                "quantity": str(self.quantity),
+                "selfTradePrevention": SelfTradePrevention.ALLOW.value,
+                "side": Side.SELL.value,
+                "symbol": self.symbol,
+                "timeInForce": self.time_in_force,
+                }
+            r = await _handle_post(self=self, params=params)
+            if isinstance(r, dict) and len(r) > 2:
+                if r["status"] == "Expired":
+                    logger.warning(f"{r['orderType']} {r['side']} order for {r['quantity']} {r['symbol']} "
+                                   f"was not filled with price : {str(price)}")
+                    await asyncio.sleep(3)
+                    await self._sell_order()
+                elif r["status"] == "Filled":
+                    logger.success(f"{r['orderType']} {r['side']} order for {r['quantity']} {r['symbol']} "
+                                   f"was filled with ask_price: {str(price)}")
+                    self.volume += price * self.quantity
+                    logger.success(f"Current {self.public_key} account volume: {str(self.volume)}")
+                    await asyncio.sleep(random_sleep_time())
+                elif r["status"] == "New":
+                    logger.success(f"{r['orderType']} {r['side']} order for {r['quantity']} {r['symbol']} "
+                                   f"was created with price : {str(price)}")
+            elif len(r) < 2:
+                logger.error("API is overloaded")
+            else:
+                logger.error(r + str(price) + str(params))
+                self.quantity = round(self.quantity - 0.01, 2)
                 await self._sell_order()
-            elif r["status"] == "Filled":
-                logger.success(f"{r['orderType']} {r['side']} order for {r['quantity']} {r['symbol']} "
-                               f"was filled with ask_price: {str(price)}")
-                self.volume += price * self.quantity
-                logger.success(f"Current {self.public_key} account volume: {str(self.volume)}")
-                await asyncio.sleep(random_sleep_time())
-            elif r["status"] == "New":
-                logger.success(f"{r['orderType']} {r['side']} order for {r['quantity']} {r['symbol']} "
-                               f"was created with price : {str(price)}")
-        elif len(r) < 2:
-            logger.error("API is overloaded")
-        else:
-            logger.error(r + str(price) + str(params))
-            self.quantity = round(self.quantity - 0.01, 2)
+        except Exception:
+            logger.error("Bad request, retrying...")
             await self._sell_order()

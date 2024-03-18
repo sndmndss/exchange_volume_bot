@@ -84,9 +84,8 @@ async def extra_options():
             results = await asyncio.gather(*tasks)
             for iteration, result in enumerate(results):
                 volume, fee = await account_volume(result)
-                print(f"{public_keys[iteration]} volume: {volume}\n"
-                      f"{public_keys[iteration]} fees: {fee}")
-
+                print(f"{public_keys[iteration]} volume for last 999 fills: {volume}\n"
+                      f"{public_keys[iteration]} fees for last 999 fills: {fee}")
         await main()
 
 
@@ -141,6 +140,10 @@ async def main():
     else:
         print("The choice must be a number of symbol")
 
+def test():
+    print(Site)
+
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    # asyncio.run(main())
+    test()
